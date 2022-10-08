@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src='https://cdn.bootcss.com/jquery/1.11.3/jquery.js'></script>
+    <title>ws</title>
+
+</head>
+<body>
+<div class="notification sticky hide">
+    初始化发送的事件：<span id="json"> </span>
+</div>
+
+<script>
+
+    function connect() {
+        // 链接远程ws服务器
+        var websocket = new WebSocket('ws://127.0.0.1:3000?token=');
+
+        websocket.onopen = function(){
+            let todo = JSON.stringify({'event':'todo'})
+
+            websocket.send(todo);
+            $('#json').html(todo);
+        };
+
+        websocket.onmessage = function(params) {
+            params = JSON.parse(params.data);
+            let event = params.event;
+            if (event === 'pong') {
+                console.log(event)
+                return;
+            }
+
+            if (event === 'todo_succeeded') {
+                console.log(params.data);
+            }
+
+            if (event === 'auth_error') {
+                throw Error(params.data.message);
+            }
+        };
+
+        // 心跳检测, 没隔55秒发送一个心跳数据 ping 给服务器，保持连接
+        websocket.timer = setInterval(function () {
+            websocket.send(JSON.stringify({'event':'ping'}));
+        }, 55000);
+
+        // 断开连接时，关闭定时器，并设置1秒后重连
+        websocket.onclose = function(e) {
+            console.log('服务器断开，重连中，强稍后...')
+            clearTimeout(websocket.timer);
+            setTimeout(connect, 1000);
+        };
+    }
+
+    connect();
+</script>
+
+</body>
+</html>
