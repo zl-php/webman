@@ -19,7 +19,7 @@ class SendMail implements Consumer
     // 消费
     public function consume($data)
     {
-        throw new InvalidRequestException("队列错误");
+        throw new \Exception("队列错误");
         Cache::set('key-'.rand(), serialize($data), 60);
     }
 }
