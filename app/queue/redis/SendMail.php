@@ -18,7 +18,7 @@ class SendMail implements Consumer
     // 消费
     public function consume($data)
     {
-        Cache::set('key', json_encode($data), 60);
+        Cache::set('key-'.rand(), serialize($data), 60);
     }
 }
 
