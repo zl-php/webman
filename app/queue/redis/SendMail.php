@@ -6,6 +6,7 @@ namespace app\queue\redis;
 
 use Webman\RedisQueue\Consumer;
 use support\Cache;
+use app\exception\InvalidRequestException;
 
 class SendMail implements Consumer
 {
@@ -18,6 +19,7 @@ class SendMail implements Consumer
     // 消费
     public function consume($data)
     {
+        throw new InvalidRequestException("队列错误");
         Cache::set('key-'.rand(), serialize($data), 60);
     }
 }
