@@ -5,6 +5,7 @@
 namespace app\queue\redis;
 
 use Webman\RedisQueue\Consumer;
+use support\Cache;
 
 class SendMail implements Consumer
 {
@@ -17,8 +18,7 @@ class SendMail implements Consumer
     // 消费
     public function consume($data)
     {
-        // 无需反序列化
-        echo 1 . PHP_EOL;
+        Cache::set('key', json_encode($data), 60);
     }
 }
 
